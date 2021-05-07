@@ -8,13 +8,24 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && cpy templates/ dist/templates/",
+    "prettify": "prettier --write **/*.ts"
   },
   "dependencies": {
-    "mustache": "^4.2.0"
+    "@apidevtools/swagger-parser": "^10.0.2",
+    "fs-extra": "^10.0.0",
+    "mustache": "^4.2.0",
+    "openapi-types": "^8.0.0",
+    "yargs": "^17.0.1"
   },
   "devDependencies": {
+    "@types/fs-extra": "^9.0.11",
     "@types/mustache": "^4.1.1",
+    "@types/ncp": "^2.0.4",
+    "@types/node": "^15.0.2",
+    "@types/yargs": "^16.0.1",
+    "cpy-cli": "^3.1.1",
+    "prettier": "^2.2.1",
     "typescript": "^4.2.4"
   }
 }
