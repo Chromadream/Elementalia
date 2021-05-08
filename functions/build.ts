@@ -2,7 +2,7 @@ import { opendir, readFile, mkdir, rm, writeFile } from "fs/promises";
 import { copy } from "fs-extra";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import Handlebars from "handlebars";
-import { exists } from "./exists";
+import { exists } from "./helpers";
 
 interface SubfolderEntry {
   name: string;
@@ -84,7 +84,7 @@ async function buildRedocDocumentation(entry: ApiEntry) {
   if (typeof entry === "string") {
     view = {
       specName: entry.split(".")[0],
-      specUrl: `apis/${entry}`,
+      specUrl: `../apis/${entry}`,
     };
   } else {
     view = {
@@ -115,7 +115,7 @@ const copyFilesToCorrectFolder = async (): Promise<void> => {
 
 const generateIndexPage = async (apis: ApiEntry[]): Promise<void> => {
   const entries: { name: string; path: string }[] = apis
-    .map((x) => ({ name: typeof x === "string" ? x : x.name }))
+    .map((x) => ({ name: typeof x === "string" ? x.split('.')[0] : x.name }))
     .map((x) => ({
       ...x,
       path: `pages/${x.name}.html`,

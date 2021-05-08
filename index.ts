@@ -1,6 +1,6 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { build, serve } from "./functions";
+import { build, serve, watchServe } from "./functions";
 
 yargs(hideBin(process.argv))
   .command(
@@ -9,7 +9,7 @@ yargs(hideBin(process.argv))
     { port: { alias: "p", default: 3000 } },
     async (argv) => {
       await build();
-      await serve(argv.port);
+      await watchServe(argv.port);
     }
   )
   .command(
