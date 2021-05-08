@@ -1,14 +1,15 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { build } from "./functions/build";
+import { build, serve } from "./functions";
 
 yargs(hideBin(process.argv))
   .command(
     "serve",
     "Preview resulting Docker image, without actually building a docker image",
     { port: { alias: "p", default: 3000 } },
-    (argv) => {
-      console.log(`Serving Elementalia on Port ${argv.port}`);
+    async (argv) => {
+      await build();
+      await serve(argv.port);
     }
   )
   .command(

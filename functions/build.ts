@@ -89,7 +89,7 @@ async function buildRedocDocumentation(entry: ApiEntry) {
   } else {
     view = {
       specName: entry.name,
-      specUrl: `apis/${entry.name}/${entry.entrypoint}`,
+      specUrl: `../apis/${entry.name}/${entry.entrypoint}`,
     };
   }
   let outputString = Handlebars.compile(templateString)(view);
@@ -105,7 +105,6 @@ const generateOutputFolder = async () => {
     await rm(outputFolder, { recursive: true, force: true });
   }
   await mkdir(outputFolder);
-  await mkdir(`${outputFolder}apis`);
   await mkdir(`${outputFolder}pages`);
 };
 
