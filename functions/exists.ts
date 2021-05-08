@@ -3,8 +3,7 @@ export const exists = async (entity: string): Promise<boolean> => {
   try {
     await access(entity);
     return true;
-  }
-  catch (e) {
+  } catch (e) {
     return false;
   }
 };

@@ -1,7 +1,7 @@
-import { opendir, readFile, mkdir, rm, writeFile, copyFile } from "fs/promises";
+import { opendir, readFile, mkdir, rm, writeFile } from "fs/promises";
 import { copy } from "fs-extra";
 import SwaggerParser from "@apidevtools/swagger-parser";
-import Mustache from "mustache";
+import Handlebars from "handlebars";
 import { exists } from "./exists";
 
 interface SubfolderEntry {
@@ -9,7 +9,7 @@ interface SubfolderEntry {
   entrypoint: string;
 }
 
-type ApiEntry = (string | SubfolderEntry);
+type ApiEntry = string | SubfolderEntry;
 
 export async function build() {
   const apis = await getApisToBuild();
@@ -18,6 +18,7 @@ export async function build() {
   for (const api of apis) {
     await buildRedocDocumentation(api);
   }
+  await generateIndexPage(apis);
 }
 
 const checkIfValidSchema = async (
@@ -91,8 +92,11 @@ async function buildRedocDocumentation(entry: ApiEntry) {
       specUrl: `apis/${entry.name}/${entry.entrypoint}`,
     };
   }
-  let outputString = Mustache.render(templateString, view);
-  await writeFile(`${process.cwd()}/finale/pages/${view.specName}.html`, outputString);
+  let outputString = Handlebars.compile(templateString)(view);
+  await writeFile(
+    `${process.cwd()}/finale/pages/${view.specName}.html`,
+    outputString
+  );
 }
 
 const generateOutputFolder = async () => {
@@ -108,4 +112,21 @@ const generateOutputFolder = async () => {
 const copyFilesToCorrectFolder = async (): Promise<void> => {
   // TODO: refactor to only copy useful files
   await copy(`${process.cwd()}/apis/`, `${process.cwd()}/finale/apis/`);
-}
+};
+
+const generateIndexPage = async (apis: ApiEntry[]): Promise<void> => {
+  const entries: { name: string; path: string }[] = apis
+    .map((x) => ({ name: typeof x === "string" ? x : x.name }))
+    .map((x) => ({
+      ...x,
+      path: `pages/${x.name}.html`,
+    }));
+  let template = await readFile("./templates/index.mustache");
+  let templateString = template.toString();
+  const view = { entries };
+  let outputPage = Handlebars.compile(templateString)(view);
+  await writeFile(
+    `${process.cwd()}/finale/index.html`,
+    outputPage
+  );
+};
